@@ -1,0 +1,50 @@
+import OpenAI from "openai";
+const pdf = require("pdf-parse");
+
+const openai = new OpenAI({
+    apiKey: process.env.OPENAI_API_KEY
+});
+
+export async function parseResume(file: Express.Multer.File) {
+    try {
+        const data = await pdf(file.buffer);
+        const text = data.text;
+        
+        const response = await openai.chat.completions.create({
+            model: "gpt-4o-mini",
+            messages: [
+                {
+                    role: "system",
+                    content: `Extract structured resume data and return as JSON with this structure:
+                    {
+                        "name": "string",
+                        "email": "string", 
+                        "phone": "string",
+                        "skills": ["string"],
+                        "experience": [{"title": "string", "company": "string", "duration": "string"}],
+                        "education": [{"degree": "string", "institution": "string", "year": "string"}],
+                        "summary": "string"
+                    }
+                    Return only valid JSON, no additional text.`
+                },
+                {
+                    role: "user",
+                    content: text.substring(0, 10000) // Limit text length
+                }
+            ],
+            response_format: { type: "json_object" }
+        });
+
+        // Safe access to content with proper null checking
+        const content = response.choices[0]?.message?.content;
+        
+        if (!content) {
+            throw new Error('No response content from OpenAI');
+        }
+        
+        return JSON.parse(content);
+    } catch (error) {
+        console.error('Error parsing resume:', error);
+        throw new Error('Failed to parse PDF resume');
+    }
+}
