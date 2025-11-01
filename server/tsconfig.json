@@ -22,6 +22,10 @@
     "declaration": false,
     "declarationMap": false
   },
+  "ts-node": {
+    "esm": true,
+    "experimentalSpecifierResolution": "node"
+  },
   "include": [
     "src/**/*"
   ],

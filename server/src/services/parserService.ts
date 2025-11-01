@@ -1,16 +1,26 @@
 import OpenAI from "openai";
+import { createRequire } from 'module';
+
+const require = createRequire(import.meta.url);
 const pdf = require("pdf-parse");
 
-const openai = new OpenAI({
-    apiKey: process.env.OPENAI_API_KEY
-});
+let openai: OpenAI | null = null;
+
+function getOpenAI() {
+    if (!openai) {
+        openai = new OpenAI({
+            apiKey: process.env.OPENAI_API_KEY
+        });
+    }
+    return openai;
+}
 
 export async function parseResume(file: Express.Multer.File) {
     try {
         const data = await pdf(file.buffer);
         const text = data.text;
-        
-        const response = await openai.chat.completions.create({
+
+        const response = await getOpenAI().chat.completions.create({
             model: "gpt-4o-mini",
             messages: [
                 {
@@ -37,12 +47,15 @@ export async function parseResume(file: Express.Multer.File) {
 
         // Safe access to content with proper null checking
         const content = response.choices[0]?.message?.content;
-        
+
         if (!content) {
             throw new Error('No response content from OpenAI');
         }
-        
-        return JSON.parse(content);
+
+        const resumeData = JSON.parse(content);
+        const themeData = { theme: 'professional' }; // Default theme
+
+        return { resumeData, themeData };
     } catch (error) {
         console.error('Error parsing resume:', error);
         throw new Error('Failed to parse PDF resume');
