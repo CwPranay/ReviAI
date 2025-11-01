@@ -1,12 +1,22 @@
 'use client';
 
-import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
 import { Sparkles, Zap, Shield } from 'lucide-react';
+import { useAuth, SignInButton } from '@clerk/nextjs';
+import { useClerkTheme } from '@/components/ClerkThemeProvider';
 
 export default function Home() {
   const router = useRouter();
+  const { isSignedIn } = useAuth();
+  const clerkAppearance = useClerkTheme();
+
+  const handleGetStarted = () => {
+    if (isSignedIn) {
+      router.push('/upload');
+    }
+    // If not signed in, the SignInButton will handle showing the modal
+  };
 
   return (
     <div className="min-h-[calc(100vh-4rem)] flex flex-col items-center justify-center px-4 bg-gradient-to-br from-background to-blue-50 dark:to-blue-950/20">
@@ -32,14 +42,26 @@ export default function Home() {
           Transform your resume with AI-powered editing. Upload once, edit with natural language commands.
         </p>
 
-        <motion.button
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
-          onClick={() => router.push('/upload')}
-          className="px-8 py-4 bg-gradient-to-r from-primary to-accent text-white rounded-xl font-semibold text-lg shadow-lg hover:shadow-xl transition-all"
-        >
-          Get Started
-        </motion.button>
+        {isSignedIn ? (
+          <motion.button
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            onClick={handleGetStarted}
+            className="px-8 py-4 bg-gradient-to-r from-primary to-accent text-white rounded-xl font-semibold text-lg shadow-lg hover:shadow-xl transition-all"
+          >
+            Get Started
+          </motion.button>
+        ) : (
+          <SignInButton mode="modal" appearance={clerkAppearance}>
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              className="px-8 py-4 bg-gradient-to-r from-primary to-accent text-white rounded-xl font-semibold text-lg shadow-lg hover:shadow-xl transition-all"
+            >
+              Get Started
+            </motion.button>
+          </SignInButton>
+        )}
 
         <div className="grid md:grid-cols-3 gap-8 mt-20">
           {[

@@ -71,3 +71,93 @@
     background-color: rgb(var(--accent));
   }
 }
+
+/* Clerk Modal Responsive Styles */
+@layer components {
+  /* Make Clerk modals responsive */
+  .cl-modalContent,
+  .cl-card {
+    @apply max-w-[95vw] sm:max-w-md mx-4 sm:mx-auto;
+  }
+  
+  .cl-rootBox {
+    @apply w-full;
+  }
+  
+  /* Responsive form elements */
+  .cl-formFieldInput {
+    @apply text-sm sm:text-base;
+  }
+  
+  .cl-formButtonPrimary {
+    @apply text-sm sm:text-base h-10 sm:h-11;
+  }
+  
+  .cl-headerTitle {
+    @apply text-xl sm:text-2xl;
+  }
+  
+  .cl-headerSubtitle {
+    @apply text-sm sm:text-base;
+  }
+  
+  /* Social buttons responsive */
+  .cl-socialButtonsBlockButton {
+    @apply text-sm sm:text-base h-10 sm:h-11;
+  }
+  
+  /* Footer links */
+  .cl-footerActionLink {
+    @apply text-sm sm:text-base;
+  }
+  
+  /* Modal backdrop */
+  .cl-modalBackdrop {
+    @apply backdrop-blur-sm;
+  }
+  
+  /* Dark theme specific improvements */
+  [data-theme="dark"] .cl-card {
+    @apply bg-slate-800 border-slate-700;
+  }
+  
+  [data-theme="dark"] .cl-modalContent {
+    @apply bg-slate-800;
+  }
+  
+  [data-theme="dark"] .cl-formFieldInput {
+    @apply bg-slate-900 border-slate-600 text-white;
+  }
+  
+  [data-theme="dark"] .cl-formFieldInput::placeholder {
+    @apply text-slate-500;
+  }
+  
+  [data-theme="dark"] .cl-socialButtonsBlockButton {
+    @apply bg-slate-900 border-slate-600 text-white;
+  }
+  
+  [data-theme="dark"] .cl-footerActionText {
+    @apply text-slate-300;
+  }
+  
+  [data-theme="dark"] .cl-headerTitle {
+    @apply text-white;
+  }
+  
+  [data-theme="dark"] .cl-headerSubtitle {
+    @apply text-slate-300;
+  }
+  
+  [data-theme="dark"] .cl-formFieldLabel {
+    @apply text-slate-200;
+  }
+  
+  [data-theme="dark"] .cl-identityPreviewText {
+    @apply text-slate-200;
+  }
+  
+  [data-theme="dark"] .cl-otpCodeFieldInput {
+    @apply bg-slate-900 border-slate-600 text-white;
+  }
+}

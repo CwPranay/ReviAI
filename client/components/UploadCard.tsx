@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useRef } from 'react';
-import { Upload, FileText, Loader2 } from 'lucide-react';
+import { Upload, FileText, Loader2, Image, FileCheck } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { uploadResume } from '@/lib/api';
 import { useResumeStore } from '@/lib/store';
@@ -15,9 +15,31 @@ export default function UploadCard() {
   const { setResume } = useResumeStore();
   const router = useRouter();
 
+  const ACCEPTED_TYPES = {
+    'application/pdf': ['.pdf'],
+    'application/vnd.openxmlformats-officedocument.wordprocessingml.document': ['.docx'],
+    'application/msword': ['.doc'],
+    'image/png': ['.png'],
+    'image/jpeg': ['.jpg', '.jpeg'],
+    'image/webp': ['.webp'],
+  };
+
+  const isValidFileType = (file: File): boolean => {
+    const validTypes = Object.keys(ACCEPTED_TYPES);
+    return validTypes.some(type => file.type === type);
+  };
+
   const handleFile = async (file: File) => {
-    if (!file.type.includes('pdf') && !file.type.includes('json')) {
-      toast.error('Please upload a PDF or JSON file');
+    // Validate file type
+    if (!isValidFileType(file)) {
+      toast.error('Please upload a PDF, DOCX, or image file (PNG, JPG, WEBP)');
+      return;
+    }
+
+    // Validate file size (10MB)
+    const maxSize = 10 * 1024 * 1024; // 10MB in bytes
+    if (file.size > maxSize) {
+      toast.error('File size must be less than 10MB');
       return;
     }
 
@@ -70,7 +92,7 @@ export default function UploadCard() {
         <input
           ref={fileInputRef}
           type="file"
-          accept=".pdf,.json"
+          accept=".pdf,.docx,.doc,.png,.jpg,.jpeg,.webp"
           onChange={handleChange}
           className="hidden"
         />
@@ -92,15 +114,31 @@ export default function UploadCard() {
               Drag and drop or click to browse
             </p>
             <p className="text-sm text-muted-foreground">
-              Supports PDF and JSON formats
+              Supports PDF, DOCX, and images (PNG, JPG, WEBP)
             </p>
           </div>
 
           {!isUploading && (
-            <div className="flex items-center space-x-2 text-sm text-muted-foreground">
-              <FileText className="w-4 h-4" />
-              <span>Max file size: 10MB</span>
+            <div className="flex flex-wrap justify-center gap-4 mt-4">
+              <div className="flex items-center space-x-2 text-sm text-muted-foreground bg-background px-3 py-2 rounded-lg">
+                <FileText className="w-4 h-4 text-primary" />
+                <span>PDF</span>
+              </div>
+              <div className="flex items-center space-x-2 text-sm text-muted-foreground bg-background px-3 py-2 rounded-lg">
+                <FileCheck className="w-4 h-4 text-primary" />
+                <span>DOCX</span>
+              </div>
+              <div className="flex items-center space-x-2 text-sm text-muted-foreground bg-background px-3 py-2 rounded-lg">
+                <Image className="w-4 h-4 text-primary" />
+                <span>Images</span>
+              </div>
             </div>
+          )}
+
+          {!isUploading && (
+            <p className="text-xs text-muted-foreground mt-2">
+              Max file size: 10MB
+            </p>
           )}
         </div>
       </div>
